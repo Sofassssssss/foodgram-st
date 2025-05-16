@@ -177,7 +177,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = self.get_object()
 
         short_link_obj, _ = ShortLink.objects.get_or_create(recipe=recipe)
-        short_path = f'/api/recipes/{short_link_obj.code}/'
+        short_path = f'recipes/{short_link_obj.code}/'
         short_url = f'http://localhost/{short_path}'
 
         return Response({'short-link': short_url},

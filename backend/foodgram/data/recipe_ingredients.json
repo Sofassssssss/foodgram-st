@@ -1,0 +1,247 @@
+[
+  {
+    "recipe": 1,
+    "ingredient": 567,
+    "amount": 204
+  },
+  {
+    "recipe": 1,
+    "ingredient": 1191,
+    "amount": 52
+  },
+  {
+    "recipe": 1,
+    "ingredient": 1597,
+    "amount": 136
+  },
+  {
+    "recipe": 2,
+    "ingredient": 567,
+    "amount": 268
+  },
+  {
+    "recipe": 2,
+    "ingredient": 1496,
+    "amount": 256
+  },
+  {
+    "recipe": 2,
+    "ingredient": 879,
+    "amount": 219
+  },
+  {
+    "recipe": 3,
+    "ingredient": 575,
+    "amount": 191
+  },
+  {
+    "recipe": 3,
+    "ingredient": 1807,
+    "amount": 196
+  },
+  {
+    "recipe": 3,
+    "ingredient": 1735,
+    "amount": 197
+  },
+  {
+    "recipe": 3,
+    "ingredient": 336,
+    "amount": 127
+  },
+  {
+    "recipe": 3,
+    "ingredient": 787,
+    "amount": 131
+  },
+  {
+    "recipe": 4,
+    "ingredient": 51,
+    "amount": 228
+  },
+  {
+    "recipe": 4,
+    "ingredient": 1544,
+    "amount": 111
+  },
+  {
+    "recipe": 4,
+    "ingredient": 382,
+    "amount": 232
+  },
+  {
+    "recipe": 5,
+    "ingredient": 1476,
+    "amount": 90
+  },
+  {
+    "recipe": 5,
+    "ingredient": 1649,
+    "amount": 124
+  },
+  {
+    "recipe": 6,
+    "ingredient": 1330,
+    "amount": 137
+  },
+  {
+    "recipe": 6,
+    "ingredient": 1367,
+    "amount": 223
+  },
+  {
+    "recipe": 6,
+    "ingredient": 486,
+    "amount": 296
+  },
+  {
+    "recipe": 6,
+    "ingredient": 1496,
+    "amount": 244
+  },
+  {
+    "recipe": 7,
+    "ingredient": 177,
+    "amount": 99
+  },
+  {
+    "recipe": 7,
+    "ingredient": 158,
+    "amount": 232
+  },
+  {
+    "recipe": 7,
+    "ingredient": 1168,
+    "amount": 216
+  },
+  {
+    "recipe": 8,
+    "ingredient": 1542,
+    "amount": 157
+  },
+  {
+    "recipe": 8,
+    "ingredient": 258,
+    "amount": 241
+  },
+  {
+    "recipe": 8,
+    "ingredient": 6,
+    "amount": 161
+  },
+  {
+    "recipe": 9,
+    "ingredient": 955,
+    "amount": 205
+  },
+  {
+    "recipe": 9,
+    "ingredient": 1171,
+    "amount": 194
+  },
+  {
+    "recipe": 10,
+    "ingredient": 1354,
+    "amount": 113
+  },
+  {
+    "recipe": 10,
+    "ingredient": 924,
+    "amount": 96
+  },
+  {
+    "recipe": 10,
+    "ingredient": 353,
+    "amount": 159
+  },
+  {
+    "recipe": 10,
+    "ingredient": 96,
+    "amount": 158
+  },
+  {
+    "recipe": 11,
+    "ingredient": 619,
+    "amount": 232
+  },
+  {
+    "recipe": 11,
+    "ingredient": 891,
+    "amount": 265
+  },
+  {
+    "recipe": 11,
+    "ingredient": 1059,
+    "amount": 58
+  },
+  {
+    "recipe": 12,
+    "ingredient": 1791,
+    "amount": 217
+  },
+  {
+    "recipe": 12,
+    "ingredient": 1161,
+    "amount": 126
+  },
+  {
+    "recipe": 12,
+    "ingredient": 1078,
+    "amount": 229
+  },
+  {
+    "recipe": 12,
+    "ingredient": 394,
+    "amount": 192
+  },
+  {
+    "recipe": 13,
+    "ingredient": 1771,
+    "amount": 128
+  },
+  {
+    "recipe": 13,
+    "ingredient": 742,
+    "amount": 83
+  },
+  {
+    "recipe": 13,
+    "ingredient": 1020,
+    "amount": 279
+  },
+  {
+    "recipe": 14,
+    "ingredient": 27,
+    "amount": 63
+  },
+  {
+    "recipe": 14,
+    "ingredient": 1197,
+    "amount": 125
+  },
+  {
+    "recipe": 15,
+    "ingredient": 1207,
+    "amount": 104
+  },
+  {
+    "recipe": 15,
+    "ingredient": 1946,
+    "amount": 90
+  },
+  {
+    "recipe": 15,
+    "ingredient": 2107,
+    "amount": 276
+  },
+  {
+    "recipe": 15,
+    "ingredient": 1050,
+    "amount": 64
+  },
+  {
+    "recipe": 15,
+    "ingredient": 1276,
+    "amount": 238
+  }
+]

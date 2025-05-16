@@ -1,0 +1,137 @@
+[
+  {
+    "id": 1,
+    "author": 1,
+    "name": "Блины",
+    "image":"recipes/blini.jpg",
+    "text": "Простой способ приготовить завтрак за 15 минут.",
+    "cooking_time": 54,
+    "pub_date": "2024-10-16T10:24:50.423998"
+  },
+  {
+    "id": 2,
+    "author": 1,
+    "name": "Сырники",
+    "image":"recipes/cheesecakes.png",
+    "text": "Нежные сырники с ванильным ароматом.",
+    "cooking_time": 12,
+    "pub_date": "2024-11-19T10:24:50.424047"
+  },
+  {
+    "id": 3,
+    "author": 1,
+    "name": "Жареная картошка",
+    "image":"recipes/fried_potato.jpg",
+    "text": "Сытное блюдо на каждый день.",
+    "cooking_time": 14,
+    "pub_date": "2025-05-13T10:24:50.424080"
+  },
+  {
+    "id": 4,
+    "author": 2,
+    "name": "Морковный салат",
+    "image":"recipes/carrot_salad.jpg",
+    "text": "Салат, который готовится за 5 минут.",
+    "cooking_time": 10,
+    "pub_date": "2025-03-27T10:24:50.424126"
+  },
+  {
+    "id": 5,
+    "author": 2,
+    "name": "Шарлотка",
+    "image":"recipes/charlotte.png",
+    "text": "Хороший рецепт, если приходят гости и нечего приготовить.",
+    "cooking_time": 50,
+    "pub_date": "2025-03-12T10:24:50.424145"
+  },
+  {
+    "id": 6,
+    "author": 2,
+    "name": "Картофельное пюре",
+    "image":"recipes/mashed_potatoes.jpg",
+    "text": "Вкусное и нежное блюдо, идеально подходит на обед.",
+    "cooking_time": 40	,
+    "pub_date": "2024-10-21T10:24:50.424165"
+  },
+  {
+    "id": 7,
+    "author": 3,
+    "name": "Куриный суп",
+    "image":"recipes/chicken_soup.jpg",
+    "text": "Классический домашний рецепт, проверенный временем.",
+    "cooking_time": 60,
+    "pub_date": "2024-07-24T10:24:50.424193"
+  },
+  {
+    "id": 8,
+    "author": 3,
+    "name": "Запеканка с сыром",
+    "image":"recipes/cheese_casserole.png",
+    "text": "Ароматная запеканка с сыром и специями.",
+    "cooking_time": 48,
+    "pub_date": "2025-01-30T10:24:50.424212"
+  },
+  {
+    "id": 9,
+    "author": 3,
+    "name": "Лазанья",
+    "image":"recipes/lasagna.png",
+    "text": "Очень вкусное блюдо для любителей итальянской кухни.",
+    "cooking_time": 80,
+    "pub_date": "2024-11-18T10:24:50.424232"
+  },
+  {
+    "id": 10,
+    "author": 4,
+    "name": "Овощное рагу",
+    "image":"recipes/vegetable_stew.jpg",
+    "text": "Полезное и питательное блюдо с овощами.",
+    "cooking_time": 37,
+    "pub_date": "2024-08-15T10:24:50.424253"
+  },
+  {
+    "id": 11,
+    "author": 4,
+    "name": "Борщ",
+    "image":"recipes/borsch.jpg",
+    "text": "Неизменная классика русской кухни.",
+    "cooking_time": 120,
+    "pub_date": "2024-06-09T10:24:50.424295"
+  },
+  {
+    "id": 12,
+    "author": 4,
+    "name": "Карбонара",
+    "image":"recipes/carbonara.jpg",
+    "text": "Классический рецепт одной из самых популярных итальянских паст.",
+    "cooking_time": 40,
+    "pub_date": "2024-12-06T10:24:50.424338"
+  },
+  {
+    "id": 13,
+    "author": 5,
+    "name": "Мясо по-французски",
+    "image":"recipes/meat_in_french.jpg",
+    "text": "Отличное блюдо на обед.",
+    "cooking_time": 50,
+    "pub_date": "2024-11-24T10:24:50.424390"
+  },
+  {
+    "id": 14,
+    "author": 5,
+    "name": "Тирамису",
+    "image":"recipes/tiramicu.jpg",
+    "text": "Изысканный десерт, который точно оценят друзья.",
+    "cooking_time": 80,
+    "pub_date": "2024-08-06T10:24:50.424431"
+  },
+  {
+    "id": 15,
+    "author": 5,
+    "name": "Медовик",
+    "image":"recipes/medovik.jpg",
+    "text": "Этот десерт точно полюбят ваши коллеги.",
+    "cooking_time": 180,
+    "pub_date": "2024-07-28T10:24:50.424475"
+  }
+]

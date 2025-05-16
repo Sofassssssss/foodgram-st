@@ -1,0 +1,37 @@
+[
+  {
+    "email": "ivan.petrov@example.com",
+    "username": "ivanpetrov89",
+    "first_name": "Иван",
+    "last_name": "Петров",
+    "password": "$2b$12$RDAutbtN5kGNV8JWemezu.MKVNLZwPuxHkzc.9lwdvwDIsMtR/D.e"
+  },
+  {
+    "email": "elena.smirnova@example.com",
+    "username": "elena_smirnova",
+    "first_name": "Елена",
+    "last_name": "Смирнова",
+    "password": "$2b$12$djzaeDQFIK1xmfWIR2tlwu1U/wDL66plA.Hfkv8rzr8RweN/B5Brm"
+  },
+  {
+    "email": "dmitry.kuznetsov@example.com",
+    "username": "d.kuznetsov",
+    "first_name": "Дмитрий",
+    "last_name": "Кузнецов",
+    "password": "$2b$12$UJkYiuw4C4eDPiiyU5JrBesE9xOtQ7ai.1ixsT5MWBuViyt40.r2S"
+  },
+  {
+    "email": "natalia.ivanova@example.com",
+    "username": "nata_iva",
+    "first_name": "Наталья",
+    "last_name": "Иванова",
+    "password": "$2b$12$jNVPdaiPuwJ3tsJMVg359uIFLlMdBjRAf8ORqMoPbnQouFjmgsEYu"
+  },
+  {
+    "email": "sergey.volkov@example.com",
+    "username": "s.volkov92",
+    "first_name": "Сергей",
+    "last_name": "Волков",
+    "password": "$2b$12$SkchdOgWQE/pFa2Bx/EMsO13NdmSNPOTi8El0t/gyyPCklr/a6iGO"
+  }
+]
