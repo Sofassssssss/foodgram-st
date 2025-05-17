@@ -34,7 +34,7 @@ API фреймворк: [![Django REST Framework](https://img.shields.io/badge/-
 Документация для API после установки доступна по адресу
 
 ```url
-    http://localhost/api/docs/redoc.html
+    http://localhost/api/docs/
 ```
 
 ## Admin зона
@@ -42,7 +42,7 @@ API фреймворк: [![Django REST Framework](https://img.shields.io/badge/-
 Admin зона django будет доступна по адресу
 
 ```url
-    http://localhost/api/admin
+    http://localhost/admin/
 ```
 
 ## Запуск проекта через Docker
@@ -56,11 +56,14 @@ Admin зона django будет доступна по адресу
     ```
 
 2. Шаблон наполнения .env можно посмотреть в файле .env.example. Файл с переменными окружения должен лежать в корневой директории.
+(SECRET_KEY см. в файле backend/foodgram/foodgram/settings.py)
+   
+   **Переменную DB_HOST не менять!**
 
 3. Находясь в папке infra/ поднять контейнеры
 
     ```bash
-    docker-compose up -d --build
+    docker compose up -d --build
     ```
 4. По адресу http://localhost будет доступно веб-приложение
 
@@ -68,31 +71,31 @@ Admin зона django будет доступна по адресу
 5. Выполнить миграции:
 
     ```bash
-    docker-compose exec backend python manage.py migrate
+    docker compose exec backend python manage.py migrate
     ```
 
-6. Создать суперпользователя:
+6. Собрать статику:
 
     ```bash
-    docker-compose exec backend python manage.py createsuperuser
+    docker compose exec backend python manage.py collectstatic --no-input
     ```
 
-7. Собрать статику:
-
-    ```bash
-    docker-compose exec backend python manage.py collectstatic --no-input
-    ```
-
-8. Наполнить базу заранее заготовленными файлами:
+7. Наполнить базу заранее заготовленными файлами:
 
     **Для импорта заранее созданных пользователей.**
 
     ```bash
-    docker-compose exec backend python manage.py import_users
+    docker compose exec backend python manage.py import_users
     ```
     
     **Для импорта ингредиентов и рецептов.**
     
     ```bash
-    docker-compose exec backend python manage.py import_recipes_data
+    docker compose exec backend python manage.py import_recipes_data
+    ```
+   
+8. Создать суперпользователя (для доступа в admin зону django):
+
+    ```bash
+    docker compose exec backend python manage.py createsuperuser
     ```
