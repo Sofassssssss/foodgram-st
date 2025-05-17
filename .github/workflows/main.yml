@@ -63,7 +63,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
   build_gateway_and_push_to_docker_hub:
-    name: Push gateway Docker image to DockerHub
+    name: Push nginx Docker image to DockerHub
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -78,10 +78,11 @@ jobs:
       - name: Push to DockerHub
         uses: docker/build-push-action@v5
         with:
-          context: ./gateway/
+          context: ./nginx/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_gateway:latest
   send_message:
+    name: Send message to tg bot
     runs-on: ubuntu-latest
     needs:
       - build_and_push_to_docker_hub
