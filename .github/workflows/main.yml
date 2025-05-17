@@ -1,4 +1,4 @@
-name: Foodgram workflow
+name: "Проект прошел проверку."
 
 on:
   push:
