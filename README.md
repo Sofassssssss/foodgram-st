@@ -39,7 +39,7 @@ API фреймворк: [![Django REST Framework](https://img.shields.io/badge/-
 
 ## Admin зона
 
-Admin зона django будет доступна по адресу
+Admin зона django после установки доступна по адресу
 
 ```url
     http://localhost/admin/
