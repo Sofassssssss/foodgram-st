@@ -1,24 +1,19 @@
 import json
+import os
 from django.core.management.base import BaseCommand
-from django.contrib.auth import get_user_model
-
 from users.models import CustomUser
 
 
 class Command(BaseCommand):
-    help = 'Импортирует пользователей из JSON файла'
-
-    def add_arguments(self, parser):
-        parser.add_argument('file', type=str,
-                            help="Путь к JSON файлу с пользователями")
+    help = ('Импортирует пользователей из JSON файла '
+            '(без передачи пути через командную строку)')
 
     def handle(self, *args, **kwargs):
-        file_path = kwargs['file']
+        file_path = os.path.join('data', 'users_hashed.json')
 
         CustomUser.objects.all().delete()
-        self.stdout.write(self.style.WARNING('Все записи CustomUser удалены перед импортом.'))
-
-        User = CustomUser
+        self.stdout.write(self.style.WARNING('Все записи CustomUser '
+                                             'удалены перед импортом.'))
 
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -42,7 +37,7 @@ class Command(BaseCommand):
                     f'Пропущена запись с недостающими обязательными полями: {item}'))
                 continue
 
-            user, created = User.objects.get_or_create(
+            user, created = CustomUser.objects.get_or_create(
                 username=username,
                 defaults={
                     'email': email,
