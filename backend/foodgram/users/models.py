@@ -2,11 +2,11 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import RegexValidator
 
-from api.constants import (MAX_NAME_LEN, MAX_SURNAME_LEN,
+from constants import (MAX_NAME_LEN, MAX_SURNAME_LEN,
                            MAX_USERNAME_LEN, MAX_EMAIL_LEN)
 
 
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     """Custom user model."""
 
     first_name = models.CharField(
@@ -20,13 +20,12 @@ class CustomUser(AbstractUser):
     )
 
     username = models.CharField(
-        'Имя пользователя',
+        'Никнейм',
         max_length=MAX_USERNAME_LEN,
         unique=True,
         validators=[
             RegexValidator(
                 regex=r'^[\w.@+-]+$',
-                message='Допускаются только буквы, цифры и символы @.+-_'
             )
         ]
     )
@@ -56,16 +55,16 @@ class Follow(models.Model):
     """User subscriptions."""
 
     user = models.ForeignKey(
-        CustomUser,
+        User,
         on_delete=models.CASCADE,
-        related_name='follower',
-        verbose_name='Фолловер',
+        related_name='follows',
+        verbose_name='Фолловеры',
     )
     following = models.ForeignKey(
-        CustomUser,
+        User,
         on_delete=models.CASCADE,
-        related_name='following',
-        verbose_name='Автор',
+        related_name='authors',
+        verbose_name='Авторы',
     )
 
     class Meta:

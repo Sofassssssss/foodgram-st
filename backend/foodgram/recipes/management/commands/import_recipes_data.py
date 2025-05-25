@@ -5,37 +5,20 @@ from django.core.management.base import BaseCommand
 from django.utils.dateparse import parse_datetime
 from django.conf import settings
 from recipes.models import Ingredient, Recipe, RecipeIngredient
-from users.models import CustomUser
+from users.models import User
 
 
 class Command(BaseCommand):
-    help = 'Импортирует ингредиенты, рецепты и связи RecipeIngredient из JSON файлов'
+    help = 'Импортирует рецепты и связи RecipeIngredient из JSON файлов'
 
-    INGREDIENTS_FILE = os.path.join(settings.BASE_DIR, 'data', 'ingredients.json')
     RECIPES_FILE = os.path.join(settings.BASE_DIR, 'data', 'recipes.json')
     RECIPE_INGREDIENTS_FILE = os.path.join(settings.BASE_DIR, 'data', 'recipe_ingredients.json')
     PHOTOS_SRC_DIR = os.path.join(settings.BASE_DIR, 'data', 'recipes_photo')
     PHOTOS_DST_DIR = os.path.join(settings.MEDIA_ROOT, 'recipes')
 
     def handle(self, *args, **kwargs):
-        self.import_ingredients()
         self.import_recipes()
         self.import_recipe_ingredients()
-
-    def import_ingredients(self):
-        try:
-            with open(self.INGREDIENTS_FILE, 'r', encoding='utf-8') as f:
-                ingredients_data = json.load(f)
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(f'Ошибка загрузки ингредиентов: {e}'))
-            return
-
-        for ingredient in ingredients_data:
-            Ingredient.objects.get_or_create(
-                name=ingredient.get('name'),
-                measurement_unit=ingredient.get('measurement_unit')
-            )
-        self.stdout.write(self.style.SUCCESS('Импорт ингредиентов завершён.'))
 
     def import_recipes(self):
         os.makedirs(self.PHOTOS_DST_DIR, exist_ok=True)
@@ -60,8 +43,8 @@ class Command(BaseCommand):
 
         for item in recipes_data:
             try:
-                author = CustomUser.objects.get(id=item.get('author'))
-            except CustomUser.DoesNotExist:
+                author = User.objects.get(id=item.get('author'))
+            except User.DoesNotExist:
                 self.stdout.write(self.style.WARNING(f'Автор id={item.get("author")} не найден.'))
                 continue
 

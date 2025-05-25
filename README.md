@@ -31,19 +31,13 @@ API фреймворк: [![Django REST Framework](https://img.shields.io/badge/-
 
 ## Документация к проекту
 
-Документация для API после установки доступна по адресу
+Документация для API после установки доступна по адресу [http://localhost/api/docs/](http://localhost/api/docs/)
 
-```url
-    http://localhost/api/docs/
-```
 
 ## Admin зона
 
-Admin зона django после установки доступна по адресу
+Admin зона django после установки доступна по адресу [http://localhost/admin/](http://localhost/admin/)
 
-```url
-    http://localhost/admin/
-```
 
 ## Запуск проекта через Docker
 
@@ -52,7 +46,7 @@ Admin зона django после установки доступна по адр
 1. Клонировать репозиторий и перейти в него в командной строке:
 
     ```bash
-    git clone <ссылка с git-hub>
+    git clone https://github.com/Sofassssssss/foodgram-st.git
     ```
 
 2. Шаблон наполнения .env можно посмотреть в файле .env.example. Файл с переменными окружения должен лежать в корневой директории.
@@ -64,7 +58,7 @@ Admin зона django после установки доступна по адр
     ```bash
     docker compose up -d --build
     ```
-4. По адресу http://localhost будет доступно веб-приложение
+4. По адресу [http://localhost](http://localhost) будет доступно веб-приложение
 
 
 5. Выполнить миграции:
@@ -79,18 +73,10 @@ Admin зона django после установки доступна по адр
     docker compose exec backend python manage.py collectstatic --no-input
     ```
 
-7. Наполнить базу заранее заготовленными файлами:
-
-    **Для импорта заранее созданных пользователей.**
+7. Наполнить базу заранее заготовленными продуктами:
 
     ```bash
-    docker compose exec backend python manage.py import_users
-    ```
-    
-    **Для импорта ингредиентов и рецептов.**
-    
-    ```bash
-    docker compose exec backend python manage.py import_recipes_data
+    docker compose exec backend python manage.py import_ingredients
     ```
    
 8. Создать суперпользователя (для доступа в admin зону django):
@@ -98,3 +84,15 @@ Admin зона django после установки доступна по адр
     ```bash
     docker compose exec backend python manage.py createsuperuser
     ```
+
+Также в проекте есть возможность предзагрузить данные о пользователях:
+   
+   ```bash
+   docker compose exec backend python manage.py import_users
+   ```
+
+и данные о рецептах:
+
+   ```bash
+   docker compose exec backend python manage.py import_recipes_data
+   ```

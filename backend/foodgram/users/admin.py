@@ -1,34 +1,40 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.utils.safestring import mark_safe
 
-from users.models import CustomUser, Follow
+from users.models import User, Follow
+from recipes.models import Recipe
 
-admin.site.register(Follow)
+
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    pass
 
 
-@admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
+@admin.register(User)
+class UserAdmin(UserAdmin):
     """
     Administration panel for user model.
 
     Search by email and username is available.
     """
 
+    model = User
+
     list_display = (
         'id',
         'username',
+        'full_name',
         'email',
-        'first_name',
-        'last_name',
+        'avatar_tag',
+        'recipe_count',
+        'following_count',
+        'follows_count',
         'is_active',
     )
 
     list_editable = (
         'is_active',
-    )
-
-    list_filter = (
-        'email',
-        'username',
     )
 
     search_fields = (
@@ -38,3 +44,33 @@ class CustomUserAdmin(admin.ModelAdmin):
 
     search_help_text = ('Доступен поиск по адресу '
                         'электронной почты или имени пользователя')
+
+    fieldsets = UserAdmin.fieldsets + (
+        ('Дополнительные поля', {
+            'fields': ('avatar',)
+        }),
+    )
+
+    @admin.display(description='ФИО')
+    def full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
+
+    @admin.display(description='Аватар')
+    @mark_safe
+    def avatar_tag(self, obj):
+        if obj.avatar:
+            return (f'<img src="{obj.avatar.url}" width="50" height="50" '
+                    f'style="object-fit: cover; border-radius: 50%;" />')
+        return '—'
+
+    @admin.display(description='Рецептов')
+    def recipe_count(self, obj):
+        return Recipe.objects.filter(author=obj).count()
+
+    @admin.display(description='Подписок')
+    def following_count(self, obj):
+        return Follow.objects.filter(user=obj).count()
+
+    @admin.display(description='Подписчиков')
+    def follows_count(self, obj):
+        return Follow.objects.filter(following=obj).count()

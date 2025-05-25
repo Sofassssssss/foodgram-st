@@ -1,7 +1,7 @@
 import json
 import os
 from django.core.management.base import BaseCommand
-from users.models import CustomUser
+from users.models import User
 
 
 class Command(BaseCommand):
@@ -11,8 +11,8 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         file_path = os.path.join('data', 'users_hashed.json')
 
-        CustomUser.objects.all().delete()
-        self.stdout.write(self.style.WARNING('Все записи CustomUser '
+        User.objects.all().delete()
+        self.stdout.write(self.style.WARNING('Все записи User '
                                              'удалены перед импортом.'))
 
         try:
@@ -37,7 +37,7 @@ class Command(BaseCommand):
                     f'Пропущена запись с недостающими обязательными полями: {item}'))
                 continue
 
-            user, created = CustomUser.objects.get_or_create(
+            user, created = User.objects.get_or_create(
                 username=username,
                 defaults={
                     'email': email,
