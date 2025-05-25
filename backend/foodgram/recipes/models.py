@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.db import models
 from django.core.validators import MinValueValidator
-import random
-import string
 
 from constants import INGREDIENT_NAME_LEN, UNIT_LEN, RECIPE_LEN
 from users.models import User
