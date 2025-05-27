@@ -65,12 +65,12 @@ class UserAdmin(UserAdmin):
 
     @admin.display(description='Рецептов')
     def recipe_count(self, obj):
-        return Recipe.objects.filter(author=obj).count()
+        return obj.recipes.count()
 
     @admin.display(description='Подписок')
     def following_count(self, obj):
-        return Follow.objects.filter(user=obj).count()
+        return obj.follows.count()
 
     @admin.display(description='Подписчиков')
     def follows_count(self, obj):
-        return Follow.objects.filter(following=obj).count()
+        return obj.authors.count()

@@ -1,7 +1,6 @@
 from collections import defaultdict
 from datetime import datetime
-import re
-from django.http import FileResponse
+from django.http import FileResponse, Http404
 from io import BytesIO
 from django.db.models import Exists, OuterRef, Value
 from django.shortcuts import get_object_or_404
@@ -28,7 +27,7 @@ from .permissions import IsAuthorOrReadOnly
 User = get_user_model()
 
 
-class MyUserViewSet(UserViewSet):
+class FoodgramUserViewSet(UserViewSet):
     """Viewset for users."""
 
     queryset = User.objects.all()
@@ -76,69 +75,41 @@ class MyUserViewSet(UserViewSet):
         Create or delete subscription to the user.
         """
         user = request.user
-        following = get_object_or_404(User, pk=id)
+        author = get_object_or_404(User, pk=id)
 
         if request.method == "POST":
-            if user == following:
+            if user == author:
                 return Response(
                     {'errors': 'Нельзя подписаться на самого себя.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            if Follow.objects.filter(user=user, following=following).exists():
+            follow, created = Follow.objects.get_or_create(user=user, following=author)
+            if not created:
                 return Response(
-                    {'errors': 'Вы уже подписаны на этого пользователя.'},
+                    {'errors': f'Вы уже подписаны на пользователя {author.first_name} {author.last_name}.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            Follow.objects.create(user=user, following=following)
 
-            try:
-                limit = int(request.query_params.get('recipes_limit', 0))
-            except ValueError:
-                limit = 0
+            serializer = FollowUserSerializer(author, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-            recipes_qs = following.recipes.all()
-            if limit > 0:
-                recipes_qs = recipes_qs[:limit]
-
-            recipes_list = []
-            for recipe in recipes_qs:
-                recipes_list.append({
-                    'id': recipe.id,
-                    'name': recipe.name,
-                    'image': request.build_absolute_uri(recipe.image.url) if recipe.image else None,
-                    'cooking_time': recipe.cooking_time,
-                })
-
-            response_data = {
-                "email": following.email,
-                "id": following.id,
-                "username": following.username,
-                "first_name": following.first_name,
-                "last_name": following.last_name,
-                "is_subscribed": True,
-                "recipes": recipes_list,
-                "recipes_count": recipes_qs.count(),
-                "avatar": request.build_absolute_uri(following.avatar.url) if following.avatar else None,
-            }
-            return Response(response_data, status=status.HTTP_201_CREATED)
-
-        else:
-            """
-            В ревью к строкам 134:140 был написан комментарий 
-            Замените на get_object_or_404(...).delete().
-            Однако в документации к API написано:
-             400 Ошибка отписки (Например, если не был подписан)
-             Следовательно при изменении кода следуя комментарию, postman_collection не проходит,
-             был оставлен изначальный код.
-            """
-            follow_instance = Follow.objects.filter(user=user, following=following).first()
-            if not follow_instance:
-                return Response(
-                    {'errors': 'Вы не подписаны на этого пользователя.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            follow_instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        """
+        В ревью к строкам 134:140 был написан комментарий 
+        Замените на get_object_or_404(...).delete().
+        Однако в документации к API написано:
+         400 Ошибка отписки (Например, если не был подписан)
+         Следовательно при изменении кода следуя комментарию, postman_collection не проходит,
+         был оставлен изначальный код.
+        """
+        follow_instance = Follow.objects.filter(user=user, following=author).first()
+        if not follow_instance:
+            return Response(
+                {'errors': f'Вы не подписаны на пользователя '
+                           f'{author.first_name} {author.last_name}.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        follow_instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class FollowViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -211,7 +182,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'], url_path='get-link')
     def get_link(self, request, pk=None):
-        self.get_object()
+        if not Recipe.objects.filter(pk=pk).exists():
+            raise Http404(f"Рецепт {pk} не найден.")
         recipe_url = reverse('recipes:get_recipe_link', args=(pk,))
         absolute_url = request.build_absolute_uri(recipe_url)
 
@@ -251,15 +223,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def handle_relation(self, request, model, pk=None):
+        recipe = self.get_object()
+        return self.handle_post_delete_relation(request=request, model=model, recipe=recipe)
+
     @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
-        recipe = self.get_object()
-        return self.handle_post_delete_relation(
-            request=request,
-            model=ShoppingList,
-            recipe=recipe
-        )
+        return self.handle_relation(request, ShoppingList, pk)
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated], url_path='download_shopping_cart')
     def download_shopping_cart(self, request):
@@ -271,17 +242,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         shopping_data = defaultdict(float)
 
         for item in ingredients:
-            ingredient_name = item.ingredient.name
-            ingredient_name_upper = ingredient_name[0].upper() + ingredient_name[1:]
-            key = f"{ingredient_name_upper} ({item.ingredient.measurement_unit})"
+            ingredient_name = item.ingredient.name.capitalize()
+            measurement_unit = item.ingredient.measurement_unit
+            key = (ingredient_name, measurement_unit)
             shopping_data[key] += item.amount
 
         product_lines = []
-        for idx, (ingredient, amount) in enumerate(shopping_data.items(), start=1):
-            match = re.search(r'\((.*?)\)', ingredient)
-            measurement_unit = match.group(1) if match else ''
-            ingredient_name = re.sub(r'\s*\(.*?\)', '', ingredient).strip()
-            product_lines.append(f"{idx}. {ingredient_name} — {amount} {measurement_unit}")
+        for idx, ((ingredient_name, unit), amount) in enumerate(shopping_data.items(), start=1):
+            product_lines.append(f"{idx}. {ingredient_name} — {amount} {unit}")
 
         recipe_lines = []
         unique_recipes = set()
@@ -301,19 +269,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             *recipe_lines,
         ])
 
-        buffer = BytesIO()
-        buffer.write(content.encode('utf-8'))
-        buffer.seek(0)
-
-        response = FileResponse(buffer, as_attachment=True, filename='shopping-list.txt')
-        return response
+        buffer = BytesIO(content.encode('utf-8'))
+        return FileResponse(buffer, as_attachment=True, filename='shopping-list.txt')
 
     @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
-        recipe = self.get_object()
-        return self.handle_post_delete_relation(
-            request=request,
-            model=FavoriteRecipe,
-            recipe=recipe,
-        )
+        return self.handle_relation(request, FavoriteRecipe, pk)

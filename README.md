@@ -84,15 +84,3 @@ Admin зона django после установки доступна по адр
     ```bash
     docker compose exec backend python manage.py createsuperuser
     ```
-
-Также в проекте есть возможность предзагрузить данные о пользователях:
-   
-   ```bash
-   docker compose exec backend python manage.py import_users
-   ```
-
-и данные о рецептах:
-
-   ```bash
-   docker compose exec backend python manage.py import_recipes_data
-   ```

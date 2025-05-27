@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.db.models import Count, OuterRef
-from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.contrib.admin import SimpleListFilter
 
@@ -28,14 +27,16 @@ class IngredientsInline(admin.StackedInline):
 class HasRecipesFilter(admin.SimpleListFilter):
     """Filter: does ingredient have any related recipes."""
 
-    title = _('есть в рецептах')
+    title = 'есть в рецептах'
     parameter_name = 'has_recipes'
 
+    LOOKUP_CHOICES = (
+        ('yes', 'Да'),
+        ('no', 'Нет'),
+    )
+
     def lookups(self, request, model_admin):
-        return (
-            ('yes', _('Да')),
-            ('no', _('Нет')),
-        )
+        return self.LOOKUP_CHOICES
 
     def queryset(self, request, queryset):
         if self.value() == 'yes':
@@ -68,7 +69,7 @@ class IngredientAdmin(admin.ModelAdmin):
     actions_on_bottom = True
 
     @admin.display(ordering='recipes_ingredient',
-                   description='Рецептов с этим ингредиентом')
+                   description='Рецептов')
     def recipes_count(self, ingredient):
         return ingredient.recipes.count()
 
@@ -79,15 +80,15 @@ class CookingTimeFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         qs = model_admin.get_queryset(request)
-        times = list(qs.values_list('cooking_time', flat=True))
-        if not times:
+        times = list(qs.values_list('cooking_time', flat=True).distinct())
+        if len(times) < 3:
             return []
         times.sort()
         n = times[len(times) // 3]
         m = times[(2 * len(times)) // 3]
         return [
             (f'lt{n}', f'быстрее {n} мин'),
-            (f'lt{m}', f'быстрее {m} мин'),
+            (f'range{n}_{m}', f'от {n} до {m} мин'),
             (f'gte{m}', f'долго (от {m} мин)'),
         ]
 
@@ -98,6 +99,12 @@ class CookingTimeFilter(SimpleListFilter):
                 return queryset.filter(cooking_time__lt=int(value[2:]))
             elif value.startswith('gte'):
                 return queryset.filter(cooking_time__gte=int(value[3:]))
+            elif value.startswith('range'):
+                parts = value[5:].split('_')
+                if len(parts) == 2:
+                    lower = int(parts[0])
+                    upper = int(parts[1])
+                    return queryset.filter(cooking_time__gte=lower, cooking_time__lt=upper)
         return queryset
 
 
@@ -152,7 +159,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(
         ordering='favorite_count',
-        description='Число добавлений рецепта.',
+        description='Рецептов.',
     )
     def favorite_count(self, recipe):
         return recipe.favorite_count
@@ -161,8 +168,12 @@ class RecipeAdmin(admin.ModelAdmin):
                    description='Продукты')
     @mark_safe
     def show_ingredients(self, recipe):
-        ingredients = recipe.ingredients.values_list('name', flat=True)
-        return '<br>'.join(ingredients)
+        recipe_ingredients = recipe.recipe_ingredients.all()
+        lines = [
+            f'{ri.ingredient.name} — {ri.amount} {ri.ingredient.measurement_unit}'
+            for ri in recipe_ingredients
+        ]
+        return '<br>'.join(lines)
 
     @admin.display(ordering='Image',
                    description='Изображение')

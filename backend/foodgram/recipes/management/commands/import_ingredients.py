@@ -13,14 +13,16 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
             with open(self.INGREDIENTS_FILE, 'r', encoding='utf-8') as f:
-                ingredients_data = json.load(f)
-                ingredients = [Ingredient(**data) for data in ingredients_data]
-                Ingredient.objects.bulk_create(ingredients)
+                ingredients = [Ingredient(**data) for data in json.load(f)]
+                ingredients_to_insert = Ingredient.objects.count()
+                Ingredient.objects.bulk_create(ingredients, ignore_conflicts=True)
 
-                ingredients_count = len(ingredients)
-                self.stdout.write(self.style.SUCCESS(f'Импорт ингредиентов завершён. '
-                                                     f'Загружено {ingredients_count} элементов.'))
+                inserted_ingredients = Ingredient.objects.count()
+
+                inserted_count = inserted_ingredients - ingredients_to_insert
+                self.stdout.write(self.style.SUCCESS(f'Импорт продуктов завершён. '
+                                                     f'Загружено {inserted_count} элементов.'))
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'Ошибка загрузки продуктов: {e}'))
-            return
+            self.stdout.write(self.style.ERROR(f'Ошибка загрузки продуктов '
+                                               f'из файла {self.INGREDIENTS_FILE}: {e}'))

@@ -11,7 +11,7 @@ from recipes.models import (Recipe, Ingredient,
 User = get_user_model()
 
 
-class MyUserSerializer(UserSerializer):
+class FoodgramUserSerializer(UserSerializer):
     """User serializer."""
 
     is_subscribed = serializers.SerializerMethodField()
@@ -56,7 +56,7 @@ class SimplifiedRecipeSerializer(serializers.ModelSerializer):
         model = Recipe
 
 
-class FollowUserSerializer(MyUserSerializer):
+class FollowUserSerializer(FoodgramUserSerializer):
     """Subscriptions serializer."""
 
     recipes = serializers.SerializerMethodField()
@@ -79,9 +79,8 @@ class FollowUserSerializer(MyUserSerializer):
 
     def get_recipes(self, obj):
         """Get related recipes."""
-        request = self.context.get('request')
         recipes_limit = int(
-            request.query_params.get('recipes_limit', 10 ** 10)
+            self.context.get('request').query_params.get('recipes_limit', 10 ** 10)
         )
         return SimplifiedRecipeSerializer(
             obj.recipes.all()[:recipes_limit], many=True, context=self.context
@@ -127,7 +126,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
-    author = MyUserSerializer()
+    author = FoodgramUserSerializer()
     ingredients = IngredientRecipeReadSerializer(source='recipe_ingredients',
                                                  many=True, read_only=True)
 
@@ -135,14 +134,13 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         fields = ('id', 'author', 'name', 'image', 'text',
                   'ingredients', 'cooking_time',
                   'is_favorited', 'is_in_shopping_cart')
+        read_only_fields = fields
         model = Recipe
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
-        if user.is_authenticated:
-            return (FavoriteRecipe.
-                    objects.filter(user=user, recipe=obj).exists())
-        return False
+        return (user.is_authenticated and
+                FavoriteRecipe.objects.filter(user=user, recipe=obj).exists())
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
@@ -158,16 +156,10 @@ class IngredientRecipeWriteSerializer(serializers.Serializer):
     Write is available
     """
 
-    id = serializers.IntegerField()
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all()
+    )
     amount = serializers.IntegerField(min_value=1)
-
-    @staticmethod
-    def validate_id(value):
-        if not Ingredient.objects.filter(pk=value).exists():
-            raise serializers.ValidationError(
-                "Ингредиента с таким ID не существует."
-            )
-        return value
 
 
 class RecipeWriteSerializer(serializers.ModelSerializer):
@@ -177,7 +169,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     Write is available.
     """
 
-    author = MyUserSerializer(
+    author = FoodgramUserSerializer(
         read_only=True, default=CurrentUserDefault())
     image = Base64ImageField()
     ingredients = IngredientRecipeWriteSerializer(
@@ -195,11 +187,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         ingredients = self.initial_data.get('ingredients')
 
-        if self.instance:
-            if ingredients is None:
-                raise ValidationError('Ингредиенты '
-                                      'обязательны при обновлении рецепта.')
-
         if ingredients is None:
             raise ValidationError('Ингредиенты должны быть указаны.')
 
@@ -209,8 +196,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         ingredients_id_list = []
         for ingredient in ingredients:
             ingredient_id = ingredient.get('id')
-            if not ingredient_id:
-                raise ValidationError('Каждый ингредиент должен содержать id.')
             ingredients_id_list.append(ingredient_id)
 
         if len(ingredients_id_list) != len(set(ingredients_id_list)):
@@ -223,24 +208,22 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         return attrs
 
     def to_representation(self, instance):
-        serializer = RecipeReadSerializer(
+        return RecipeReadSerializer(
             instance,
             context=self.context
-        )
-        return serializer.data
+        ).data
 
     @staticmethod
     def _add_ingredients(recipe, ingredients):
         """Add list of ingredients of recipe."""
-        data = [
+        RecipeIngredient.objects.bulk_create([
             RecipeIngredient(
                 recipe=recipe,
-                ingredient_id=ingredient['id'],
+                ingredient_id=ingredient['id'].id,
                 amount=ingredient['amount']
             )
             for ingredient in ingredients
-        ]
-        RecipeIngredient.objects.bulk_create(data)
+        ])
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
@@ -251,6 +234,8 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
         instance.ingredients.clear()
-        instance = super().update(instance, validated_data)
-        self._add_ingredients(instance, ingredients)
+        self._add_ingredients(
+            super().update(instance, validated_data),
+            ingredients
+        )
         return instance
