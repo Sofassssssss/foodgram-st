@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 
 from users.models import User, Follow
-from recipes.models import Recipe
 
 
 @admin.register(Follow)
