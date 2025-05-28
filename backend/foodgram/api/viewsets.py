@@ -86,26 +86,18 @@ class FoodgramUserViewSet(UserViewSet):
             follow, created = Follow.objects.get_or_create(user=user, following=author)
             if not created:
                 return Response(
-                    {'errors': f'Вы уже подписаны на пользователя {author.first_name} {author.last_name}.'},
+                    {'errors': f'Вы уже подписаны на пользователя {author.username}.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
             serializer = FollowUserSerializer(author, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        """
-        В ревью к строкам 134:140 был написан комментарий 
-        Замените на get_object_or_404(...).delete().
-        Однако в документации к API написано:
-         400 Ошибка отписки (Например, если не был подписан)
-         Следовательно при изменении кода следуя комментарию, postman_collection не проходит,
-         был оставлен изначальный код.
-        """
         follow_instance = Follow.objects.filter(user=user, following=author).first()
         if not follow_instance:
             return Response(
                 {'errors': f'Вы не подписаны на пользователя '
-                           f'{author.first_name} {author.last_name}.'},
+                           f'{author.username}.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         follow_instance.delete()
@@ -207,14 +199,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
-            """
-            В ревью был написан комментарий
-            Рекомендую заменить строки 208:213 (сейчас это строки 200:205) на get_object_or_404(...).delete().
-            Однако в документации к API написано:
-             400 Ошибка удаления из списка покупок (Например, когда рецепта там не было)
-             Следовательно при изменении кода следуя комментарию, postman_collection не проходит,
-             был оставлен изначальный код.
-            """
             deleted, _ = model.objects.filter(user=user, recipe=recipe).delete()
             if deleted == 0:
                 return Response(
